@@ -1,0 +1,40 @@
+location,kind,detail,impact_area,risk,evidence,confidence,needs_confirm,note
+mvnw,shell,Unix/POSIX シェルスクリプト（#!/bin/sh）。Windows では mvnw.cmd を使う必要がある,ビルド起動,mid,mvnw:1,fact,no,Linux/macOS 向けビルドスクリプト。Cygwin/MinGW 対応コードあり
+mvnw.cmd,shell,Windows バッチスクリプト（@echo off）。mvnw の Windows 対応版,ビルド起動,mid,mvnw.cmd:36,fact,no,Windows 向けビルドスクリプト。PowerShell を内部で呼び出す（l.146-155）
+mvnw,env-var,JAVA_HOME 必須。未設定時はビルド失敗（exit 1）,ビルド起動,high,mvnw:26,fact,no,JAVA_HOME が設定されていないと Error: JAVA_HOME not defined correctly でビルド終了
+mvnw.cmd,env-var,JAVA_HOME 必須。未設定時は Error: JAVA_HOME not found でビルド失敗,ビルド起動,high,mvnw.cmd:24,fact,no,Windows 環境でも同様
+mvnw,env-var,MAVEN_OPTS を読み込み JVM 引数として追加（.mvn/jvm.config の内容も結合）,ビルド設定,low,mvnw:313,fact,no,環境変数 MAVEN_OPTS が設定されていれば追加適用される
+mvnw,env-var,MVNW_REPOURL / MVNW_USERNAME / MVNW_PASSWORD — Maven Wrapper JAR のダウンロード先・認証情報,ビルド起動,mid,mvnw:222,fact,yes,ネットワーク制限環境では MVNW_REPOURL を社内リポジトリに変更が必要
+mvnw,file-path,/usr/local/etc/mavenrc, /etc/mavenrc, $HOME/.mavenrc — 実行前に読み込む OS パス（存在確認あり）,ビルド設定,low,mvnw:38-46,fact,no,存在しない場合はスキップされるので通常は問題なし
+mvnw,file-path,/usr/libexec/java_home（macOS 固有）/ /Library/Java/Home（macOS フォールバック）— JAVA_HOME 自動解決に使用,ビルド起動,low,mvnw:64-68,fact,no,macOS 固有パス。他 OS は別フォールバックがある
+mvnw,os-command,uname コマンドで OS 種別を判定（CYGWIN / MINGW / Darwin）,ビルド起動,low,mvnw:56,fact,no,uname が存在しない非 POSIX 環境では動作しない
+mvnw,os-command,which / readlink -f — JAVA_HOME 自動解決に使用（Solaris 10 で readlink 非対応の注記あり）,ビルド起動,low,mvnw:102-114,fact,no,Solaris 等の exotic 環境ではフォールバック挙動になる
+mvnw,os-command,sha256sum または shasum — Maven Wrapper JAR の SHA-256 検証に使用,ビルド起動,mid,mvnw:292-300,fact,no,どちらも存在しない環境では wrapperSha256Sum 設定時にビルドエラー
+mvnw,os-command,wget または curl — Maven Wrapper JAR のダウンロードに使用（なければ javac/java へフォールバック）,ビルド起動,mid,mvnw:240-275,fact,no,wget/curl/java のいずれも使えない環境では Wrapper JAR を事前配置が必要
+mvnw.cmd,os-command,powershell コマンド — Maven Wrapper JAR のダウンロードと SHA-256 検証に使用,ビルド起動,mid,mvnw.cmd:146-175,fact,no,Windows 環境での依存。PowerShell が無効化されている環境では失敗
+.mvn/wrapper/maven-wrapper.properties,build,Maven Wrapper バージョン 3.3.4 / Maven 3.9.16。中央リポジトリ URL をハードコード,ビルド起動,mid,.mvn/wrapper/maven-wrapper.properties:1-4,fact,yes,ネットワーク制限環境では distributionUrl を社内ミラーに変更が必要
+pom.xml,build,Java バージョン 17 指定（java.version / java.release.version = 17）。CI では 21/25/26/27-ea でテスト,ビルド・実行,mid,pom.xml:62-63,fact,no,Java 17 未満では --release 指定によりコンパイル不可
+pom.xml,build,packaging=war。サーブレットコンテナ（Tomcat/Jetty 等）へのデプロイが前提,デプロイ,mid,pom.xml:21,fact,no,スタンドアロン実行（Spring Boot 等）は非対応
+pom.xml,build,spring-web 5.3.39 固定（他の Spring 6.x と混在）。コメントに「Jakarta upgrade まで固定」と明記,ビルド・実行,high,pom.xml:108-110,fact,no,Jakarta EE 9+ への移行時に spring-web も 6.x へ更新が必要。javax→jakarta パッケージ変更も伴う
+pom.xml,build,cargo-maven3-plugin でコンテナをダウンロード・起動（デフォルト tomcat9 プロファイルが activeByDefault=true）,デプロイ,mid,pom.xml:325-352,fact,no,ビルド時にインターネット接続が必要。オフライン環境では事前にコンテナ ZIPを用意する必要あり
+pom.xml,deploy,"デプロイ対象コンテナ: Tomcat9/TomEE8/WildFly26/Liberty-ee8/Jetty12/GlassFish5/Payara5/Resin4 の 8 種（Maven プロファイルで切替）",デプロイ,mid,pom.xml:322-551,fact,yes,どのコンテナを本番で使用するかは設定から確定不可
+pom.xml,deploy,cargo.daemon.url=http://localhost:18000 をハードコード（cargo daemon 使用時のみ適用）,デプロイ,low,pom.xml:276,fact,no,cargo daemon 機能は現状無効化（コメントアウト）されているため直接影響なし
+Dockerfile,build,FROM openjdk:25（タグ固定なし — latest 相当）,ビルド・実行,mid,Dockerfile:17,fact,no,openjdk:25 は未リリース段階のイメージを参照する可能性あり。タグを固定すべき
+Dockerfile,file-path,COPY . /usr/src/myapp — コンテナ内絶対パスに固定,デプロイ,low,Dockerfile:18-19,fact,no,Dockerfile 内部パスのため外部への影響は小さい
+Dockerfile,shell,RUN ./mvnw clean package および CMD ./mvnw cargo:run -P tomcat90 を直接実行,デプロイ,mid,Dockerfile:20-21,fact,no,mvnw が POSIX シェルに依存するため Linux コンテナでのみ動作。Windows コンテナ不可
+docker-compose.yaml,deploy,ポート 8080:8080 固定マッピング,デプロイ,low,docker-compose.yaml:21,fact,no,ホスト側 8080 が使用中の場合は衝突
+.github/workflows/ci.yaml,build,GitHub Actions (ubuntu / macos / windows-latest) × Java 21/25/26/27-ea のマトリクス CI,ビルド,low,.github/workflows/ci.yaml:13-21,fact,no,ローカルビルド環境は CI と異なる場合があり結果が diverge する可能性がある
+.github/workflows/support.yaml,deploy,liberty-ee8 プロファイルは windows-latest で除外（exclude 設定）。Windows での Liberty 非対応,デプロイ,mid,.github/workflows/support.yaml:38-40,fact,yes,Windows 上で Liberty EE8 が動作しない理由は CI の exclude から確認できるが詳細は未確認
+.github/workflows/sonar.yaml,env-var,"SONAR_TOKEN, GITHUB_TOKEN — GitHub Actions Secrets 経由で設定",CI/CD,low,.github/workflows/sonar.yaml:39-40,fact,no,ローカル実行時は環境変数として別途設定が必要
+.github/workflows/sonatype.yaml,env-var,"CI_DEPLOY_USERNAME, CI_DEPLOY_PASSWORD — Maven セントラルへのリリース認証情報",CI/CD,mid,.github/workflows/sonatype.yaml:30-31,fact,no,リリース環境でのみ必要。環境移行時は認証設定の引き継ぎが必要
+.github/workflows/site.yaml,env-var,NVD_API_KEY — dependency-check-plugin が NVD API にアクセスするための API キー,CI/CD,low,.github/workflows/site.yaml:32,fact,no,NVD API キー未設定では dependency check が失敗する可能性あり
+.mvn/settings.xml,env-var,"${env.CI_DEPLOY_USERNAME}, ${env.CI_DEPLOY_PASSWORD}, ${env.GITHUB_TOKEN}, ${env.NVD_API_KEY} — Maven settings に環境変数参照",CI/CD,low,.mvn/settings.xml:25-49,fact,no,ローカル実行時はこれらの環境変数が不要（リリース・サイト系ゴールのみ使用）
+src/main/webapp/WEB-INF/web.xml,encoding,"web.xml の namespace が java.sun.com/xml/ns/javaee（Servlet 3.0 / Java EE 6 相当）。jakarta.ee への移行前提",デプロイ,high,src/main/webapp/WEB-INF/web.xml:24-27,fact,no,"Jakarta EE 9+ 対応コンテナ（Tomcat 10+/Jetty 11+等）では javax.* が使用できないため、web.xml の namespace 変更が必要"
+src/main/webapp/WEB-INF/beans.xml,encoding,xmlns が xmlns.jcp.org/xml/ns/javaee（Java EE 7/8 相当）。Jakarta EE 9+ では jakarta.ee に変更が必要,デプロイ,high,src/main/webapp/WEB-INF/beans.xml:18-21,fact,no,Jakarta EE 9+ への移行時は beans.xml namespace も更新が必要
+src/main/java/.../web/actions/*.java,encoding,"javax.servlet.http.HttpSession / HttpServletRequest を import（AccountActionBean.java, CartActionBean.java, OrderActionBean.java）",実行,high,"src/main/java/org/mybatis/jpetstore/web/actions/AccountActionBean.java:22, CartActionBean.java:20, OrderActionBean.java:22",fact,no,jakarta.servlet.* に変更しないと Jakarta EE 9+ サーブレットコンテナではコンパイル・デプロイ不可
+src/main/webapp/WEB-INF/jsp/common/IncludeTop.jsp,encoding,contentType="text/html;charset=UTF-8" を明示。他の JSP はページエンコーディング未指定,実行,low,src/main/webapp/WEB-INF/jsp/common/IncludeTop.jsp:18,fact,no,他 JSP は IncludeTop.jsp を include しているため実効的には UTF-8 が適用される。サーバ側デフォルトエンコーディングと一致している必要あり
+pom.xml,encoding,全 XML ファイルで encoding=UTF-8 宣言。project.build.sourceEncoding は親 POM (mybatis-parent:52) に委任,ビルド,low,pom.xml:1,inferred,yes,mybatis-parent の project.build.sourceEncoding 設定内容は本リポジトリ内から確認不可
+src/test/java/.../MapperTestContext.java,encoding,テスト用 DB スクリプト読み込みで setScriptEncoding("UTF-8") を明示,テスト,low,src/test/java/org/mybatis/jpetstore/mapper/MapperTestContext.java:37,fact,no,テスト環境でも UTF-8 前提。非 UTF-8 環境では SQL の日本語リテラル等が文字化けする可能性あり
+pom.xml,build,"wildfly26 プロファイルで --add-opens=java.base/java.util=ALL-UNNAMED を JVM 引数に追加（cargo.jvmargs）",実行,mid,pom.xml:388,fact,no,Java 9+ の強カプセル化に対するワークアラウンド。WildFly 26 + Java 17 の組合せで必要
+pom.xml,build,maven-war-plugin の manifest に jdk.unsupported モジュール依存を追加（WildFly / Liberty 向け）,デプロイ,mid,pom.xml:245,fact,no,Java モジュールシステム依存。jdk.unsupported が存在しない JRE では動作しない可能性あり
+src/main/webapp/WEB-INF/applicationContext.xml,deploy,"DB は jdbc:embedded-database（HSQLDB インメモリ）を使用。外部 DB 接続設定なし。データは classpath:database/jpetstore-hsqldb-*.sql から毎回初期化",データ,high,src/main/webapp/WEB-INF/applicationContext.xml:31-34,fact,no,本番環境で永続化が必要な場合は dataSource Bean を外部 DB 接続に差し替えが必要。現状は起動ごとにデータリセット

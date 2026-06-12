@@ -7,6 +7,9 @@
 
 ## なにができるか
 
+> 📊 **実例**: [examples/jpetstore/](examples/jpetstore/) — JPetStore 6 を実際に調査した出力一式
+> （CSV 17 本 + 二層報告書 + 実行ログ。コールドスタート 35 分・全 15 ステップ完走）
+
 ### survey-unit（推奨）— flowsmith 駆動の調査ワークフロー
 
 [survey-unit/](survey-unit/) は、現状調査の全 15 工程（資産棚卸し → 分類 → 依存抽出 →

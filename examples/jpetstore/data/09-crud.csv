@@ -1,0 +1,38 @@
+program,table,crud,evidence,confidence,needs_confirm,note
+org.mybatis.jpetstore.mapper.AccountMapper,ACCOUNT,CRU,src/main/resources/org/mybatis/jpetstore/mapper/AccountMapper.xml:26-100,fact,no,"getAccountByUsername(R), getAccountByUsernameAndPassword(R), insertAccount(C), updateAccount(U)"
+org.mybatis.jpetstore.mapper.AccountMapper,SIGNON,CRU,src/main/resources/org/mybatis/jpetstore/mapper/AccountMapper.xml:26-131,fact,no,"getAccountByUsername/getAccountByUsernameAndPassword でJOIN(R), insertSignon(C), updateSignon(U)"
+org.mybatis.jpetstore.mapper.AccountMapper,PROFILE,CRU,src/main/resources/org/mybatis/jpetstore/mapper/AccountMapper.xml:26-120,fact,no,"getAccountByUsername/getAccountByUsernameAndPassword でJOIN(R), insertProfile(C), updateProfile(U)"
+org.mybatis.jpetstore.mapper.AccountMapper,BANNERDATA,R,src/main/resources/org/mybatis/jpetstore/mapper/AccountMapper.xml:26-77,fact,no,"getAccountByUsername/getAccountByUsernameAndPassword でJOIN(R)。BANNERDATA への書き込みは行わない"
+org.mybatis.jpetstore.mapper.CategoryMapper,CATEGORY,R,src/main/resources/org/mybatis/jpetstore/mapper/CategoryMapper.xml:26-41,fact,no,"getCategory(R), getCategoryList(R)。書き込み操作なし"
+org.mybatis.jpetstore.mapper.ProductMapper,PRODUCT,R,src/main/resources/org/mybatis/jpetstore/mapper/ProductMapper.xml:26-54,fact,no,"getProduct(R), getProductListByCategory(R), searchProductList(R)。書き込み操作なし"
+org.mybatis.jpetstore.mapper.ItemMapper,ITEM,R,src/main/resources/org/mybatis/jpetstore/mapper/ItemMapper.xml:26-68,fact,no,"getItemListByProduct(R), getItem(R)。ITEMテーブルへの書き込みは行わない（INVENTORY経由で在庫のみ更新）"
+org.mybatis.jpetstore.mapper.ItemMapper,INVENTORY,RU,src/main/resources/org/mybatis/jpetstore/mapper/ItemMapper.xml:70-80,fact,no,"getInventoryQuantity(R), updateInventoryQuantity(U)。INSERT/DELETEなし"
+org.mybatis.jpetstore.mapper.ItemMapper,PRODUCT,R,src/main/resources/org/mybatis/jpetstore/mapper/ItemMapper.xml:26-68,fact,no,"getItemListByProduct/getItem でPRODUCTをJOIN参照(R)"
+org.mybatis.jpetstore.mapper.OrderMapper,ORDERS,CR,src/main/resources/org/mybatis/jpetstore/mapper/OrderMapper.xml:26-102,fact,no,"getOrder(R), getOrdersByUsername(R), insertOrder(C)"
+org.mybatis.jpetstore.mapper.OrderMapper,ORDERSTATUS,CR,src/main/resources/org/mybatis/jpetstore/mapper/OrderMapper.xml:26-107,fact,no,"getOrder/getOrdersByUsername でORDERSTATUSをJOIN(R), insertOrderStatus(C)"
+org.mybatis.jpetstore.mapper.LineItemMapper,LINEITEM,CR,src/main/resources/org/mybatis/jpetstore/mapper/LineItemMapper.xml:26-40,fact,no,"getLineItemsByOrderId(R), insertLineItem(C)"
+org.mybatis.jpetstore.mapper.SequenceMapper,SEQUENCE,RU,src/main/resources/org/mybatis/jpetstore/mapper/SequenceMapper.xml:26-36,fact,no,"getSequence(R), updateSequence(U)。テーブルベース採番管理"
+org.mybatis.jpetstore.service.AccountService,ACCOUNT,CRU,src/main/java/org/mybatis/jpetstore/service/AccountService.java:40-72,fact,no,"getAccountByUsername(R), getAccountByUsernameAndPassword(R), insertAccount(C), updateAccount(U)。AccountMapper経由"
+org.mybatis.jpetstore.service.AccountService,SIGNON,CRU,src/main/java/org/mybatis/jpetstore/service/AccountService.java:44-72,fact,no,"insertSignon(C), updateSignon(U), 認証時READ。AccountMapper経由"
+org.mybatis.jpetstore.service.AccountService,PROFILE,CRU,src/main/java/org/mybatis/jpetstore/service/AccountService.java:55-69,fact,no,"insertProfile(C), updateProfile(U), JOIN参照(R)。AccountMapper経由"
+org.mybatis.jpetstore.service.AccountService,BANNERDATA,R,src/main/java/org/mybatis/jpetstore/service/AccountService.java:40-44,fact,no,"getAccount系メソッドでJOIN参照(R)。AccountMapper経由"
+org.mybatis.jpetstore.service.CatalogService,CATEGORY,R,src/main/java/org/mybatis/jpetstore/service/CatalogService.java:48-52,fact,no,"getCategoryList(R), getCategory(R)。CategoryMapper経由"
+org.mybatis.jpetstore.service.CatalogService,PRODUCT,R,src/main/java/org/mybatis/jpetstore/service/CatalogService.java:56-74,fact,no,"getProduct(R), getProductListByCategory(R), searchProductList(R)。ProductMapper経由"
+org.mybatis.jpetstore.service.CatalogService,ITEM,R,src/main/java/org/mybatis/jpetstore/service/CatalogService.java:79-83,fact,no,"getItemListByProduct(R), getItem(R)。ItemMapper経由"
+org.mybatis.jpetstore.service.CatalogService,INVENTORY,R,src/main/java/org/mybatis/jpetstore/service/CatalogService.java:88,fact,no,"getInventoryQuantity(R)。isItemInStockの在庫確認。ItemMapper経由"
+org.mybatis.jpetstore.service.OrderService,ORDERS,CR,src/main/java/org/mybatis/jpetstore/service/OrderService.java:71-109,fact,no,"insertOrder(C), getOrder(R), getOrdersByUsername(R)。OrderMapper経由"
+org.mybatis.jpetstore.service.OrderService,ORDERSTATUS,CR,src/main/java/org/mybatis/jpetstore/service/OrderService.java:72-89,fact,no,"insertOrderStatus(C), getOrder内JOIN参照(R)。OrderMapper経由"
+org.mybatis.jpetstore.service.OrderService,LINEITEM,CR,src/main/java/org/mybatis/jpetstore/service/OrderService.java:75-90,fact,no,"insertLineItem(C), getLineItemsByOrderId(R)。LineItemMapper経由"
+org.mybatis.jpetstore.service.OrderService,ITEM,R,src/main/java/org/mybatis/jpetstore/service/OrderService.java:93,fact,no,"getItem(R)。注文処理時のアイテム参照。ItemMapper経由"
+org.mybatis.jpetstore.service.OrderService,INVENTORY,RU,src/main/java/org/mybatis/jpetstore/service/OrderService.java:67-94,fact,no,"updateInventoryQuantity(U)注文時在庫減算, getInventoryQuantity(R)在庫確認。ItemMapper経由"
+org.mybatis.jpetstore.service.OrderService,SEQUENCE,RU,src/main/java/org/mybatis/jpetstore/service/OrderService.java:122-128,fact,no,"getSequence(R)で採番取得, updateSequence(U)で次ID更新。SequenceMapper経由。ORDER IDの採番に使用"
+src/main/resources/database/jpetstore-hsqldb-dataload.sql,SEQUENCE,C,src/main/resources/database/jpetstore-hsqldb-dataload.sql:17,fact,no,"INSERT INTO sequence VALUES('ordernum', 1000)。初期データ投入"
+src/main/resources/database/jpetstore-hsqldb-dataload.sql,SIGNON,C,src/main/resources/database/jpetstore-hsqldb-dataload.sql:19,fact,no,初期テストユーザーデータ投入（j2ee/ACID）
+src/main/resources/database/jpetstore-hsqldb-dataload.sql,ACCOUNT,C,src/main/resources/database/jpetstore-hsqldb-dataload.sql:22,fact,no,初期テストアカウントデータ投入
+src/main/resources/database/jpetstore-hsqldb-dataload.sql,PROFILE,C,src/main/resources/database/jpetstore-hsqldb-dataload.sql:25,fact,no,初期プロファイルデータ投入
+src/main/resources/database/jpetstore-hsqldb-dataload.sql,BANNERDATA,C,src/main/resources/database/jpetstore-hsqldb-dataload.sql:28,fact,no,初期バナーデータ投入（5カテゴリ）
+src/main/resources/database/jpetstore-hsqldb-dataload.sql,CATEGORY,C,src/main/resources/database/jpetstore-hsqldb-dataload.sql:34,fact,no,初期カテゴリデータ投入（FISH/DOGS/REPTILES/CATS/BIRDS）
+src/main/resources/database/jpetstore-hsqldb-dataload.sql,PRODUCT,C,src/main/resources/database/jpetstore-hsqldb-dataload.sql:40,fact,no,初期商品データ投入（16件）
+src/main/resources/database/jpetstore-hsqldb-dataload.sql,SUPPLIER,C,src/main/resources/database/jpetstore-hsqldb-dataload.sql:57,fact,no,初期サプライヤデータ投入（2件）
+src/main/resources/database/jpetstore-hsqldb-dataload.sql,ITEM,C,src/main/resources/database/jpetstore-hsqldb-dataload.sql:60,fact,no,初期アイテムデータ投入（28件）
+src/main/resources/database/jpetstore-hsqldb-dataload.sql,INVENTORY,C,src/main/resources/database/jpetstore-hsqldb-dataload.sql:89,fact,no,初期在庫データ投入（28件、各10000個）

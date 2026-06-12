@@ -1,0 +1,24 @@
+{
+  "flow_id": "legacy_survey",
+  "status": "complete",
+  "started_at": "2026-06-11T00:00:00Z",
+  "completed_at": "2026-06-12T04:21:01Z",
+  "completed_steps": ["asset_check", "asset_inventory", "layer_map", "library_inventory", "dependency_map", "frontend_survey", "backend_survey", "framework_survey", "runtime_impact", "db_survey", "platform_survey", "flow_trace", "impact_matrix", "consistency_gate", "survey_report"],
+  "steps": {
+    "asset_check": {"status": "done", "rounds": 1},
+    "asset_inventory": {"status": "done", "rounds": 1},
+    "layer_map": {"status": "done", "rounds": 1},
+    "library_inventory": {"status": "done", "rounds": 1},
+    "dependency_map": {"status": "done", "rounds": 1},
+    "frontend_survey": {"status": "done", "rounds": 1},
+    "backend_survey": {"status": "done", "rounds": 1},
+    "framework_survey": {"status": "done", "rounds": 1},
+    "runtime_impact": {"status": "done", "rounds": 1},
+    "db_survey": {"status": "done", "rounds": 1},
+    "platform_survey": {"status": "done", "rounds": 1},
+    "flow_trace": {"status": "done", "rounds": 1},
+    "impact_matrix": {"status": "done", "rounds": 2},
+    "consistency_gate": {"status": "yes"},
+    "survey_report": {"status": "done", "rounds": 2}
+  }
+}

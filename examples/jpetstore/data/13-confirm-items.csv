@@ -1,0 +1,31 @@
+item,origin,reason,ask_to
+業務バッチ処理の有無とジョブスケジュール構成,00-asset-check.csv:batch-shell行,業務バッチクラス・シェルがソースに未発見。spring-batch-infrastructure依存はあるが実装クラスが確認できない,顧客
+ライブラリの実体JAR確認（WEB-INF/lib直接参照の未宣言ライブラリ有無）,00-asset-check.csv:library行,実体JARはコミットされておらずMaven依存管理で取得のためWEB-INF/lib直接参照による未宣言ライブラリの有無が確認不可,顧客
+本番DB（MySQL/PostgreSQL等）用DDLの有無,00-asset-check.csv:db行,HSQLDBスキーマDDLのみ存在。本番DB用DDLが存在しない可能性あり,顧客
+本番環境で使用するAPサーバーの種類（Tomcat/Liberty/WildFly等）,00-asset-check.csv:deploy-env行,CI設定に8種のAPサーバープロファイルが存在するが本番使用サーバーが設定から特定不可,顧客
+業務設計書（ER図・画面遷移図・機能仕様書等）の有無,00-asset-check.csv:document行,Maven Siteの技術ドキュメントは存在するが業務設計書が未発見,顧客
+移行目標のJavaバージョン（Java 21 LTSへの移行可否）,08-runtime-impact.csv:language-version行（pom.xml:63 Java 17 needs_confirm=yes）,現行はJava 17。CIはJava 21/25/26/27-eaでテスト中だが正式な移行目標バージョンが未定,顧客
+mybatis-parent:52の maven-compiler-plugin 設定値,08-runtime-impact.csv:language-version行（pom.xml mybatis-parent:52 needs_confirm=yes）,コンパイラ設定が親POM(mybatis-parent:52)に委譲されており本リポジトリ内から設定値確認不可,技術検証
+本番APサーバーとしてIBM Liberty EE8を使用しているか,08-runtime-impact.csv:server-api行（liberty-ee8 profile needs_confirm=yes）,pom.xmlのliberty-ee8プロファイルとspring-batch-infrastructure依存（Libertyの OSGi問題回避目的）からLiberty利用の可能性があるが確認不可,顧客
+本番APサーバーとしてWildFly 26を使用しているか（WildFly 27+移行計画を含む）,08-runtime-impact.csv:server-api行（wildfly26 profile needs_confirm=yes）,pom.xmlのwildfly26プロファイルが定義されているが実際に使用しているか不明。WildFly 26はEOL,顧客
+spring-batch-infrastructure依存の必要性（Liberty不使用の場合は削除可能か）,08-runtime-impact.csv:library-compat行（spring-batch-infrastructure needs_confirm=yes）,Liberty向けOSGi問題回避目的とコメントにあるが、Liberty不使用であれば不要な依存の可能性あり,顧客
+JSTL context-paramのパラメータ名変更有無（Jakarta JSTL 3.x移行時）,12-impact-matrix.csv:JSTL localization context行（needs_confirm=yes）,web.xml:31のjavax.servlet.jsp.jstl.fmt.localizationContext がJakarta JSTL 3.x移行後も有効か仕様確認が必要,技術検証
+本番APサーバーの最終決定（8種プロファイルのどれを使用するか）,12-impact-matrix.csv:APサーバー選択行（needs_confirm=yes） / 12-impact-matrix.csv:Tomcat9行（dep_from=全JSP・APサーバーデプロイ, dep_to=Tomcat 9（APサーバー runtime）, needs_confirm=yes）,pom.xmlに8種のAPサーバープロファイルが存在するが本番環境での使用サーバーが設定から特定不可,顧客
+移行先DBの種類（MySQL / PostgreSQL 等）,12-impact-matrix.csv:HSQLDB置換行（needs_confirm=yes）,現行はHSQLDBインメモリDBを使用。本番DB移行が前提だが移行先DB種別が未定,顧客
+ORDERSTATUS.timestamp列名の予約語問題（移行先DBがPostgreSQL/MySQLの場合）,12-impact-matrix.csv:ORDERSTATUS.timestamp列名行（needs_confirm=yes） / 09-db.csv:ORDERSTATUS行,HSQLDB では許容されるが PostgreSQL/MySQL ではTIMESTAMPが予約語のため列名クォートまたはリネームが必要か確認要,技術検証
+SEQUENCEテーブル名の予約語問題（移行先DBがPostgreSQLの場合）,12-impact-matrix.csv:SEQUENCEテーブル名行（needs_confirm=yes） / 09-db.csv:SEQUENCE行,PostgreSQLではSEQUENCEがオブジェクト予約語のためテーブル名変更またはクォートが必要か確認要,技術検証
+SequenceMapperの採番キャッシュ（MyBatis L2 Cache）による採番重複リスクの対処,12-impact-matrix.csv:採番キャッシュ行（needs_confirm=yes） / 09-db.csv:SequenceMapper_cache行（SequenceMapper.xml:24）,SequenceMapper.xmlの<cache/>タグにより採番テーブルにキャッシュが有効。並行処理時に採番重複リスクあり。本番DB移行前の対処要否を確認,技術検証
+AccountMapperの認証データキャッシュ（MyBatis L2 Cache）のクラスタ環境対応,12-impact-matrix.csv:AccountMapperキャッシュ行（needs_confirm=yes） / 09-db.csv:AccountMapper_cache行（AccountMapper.xml:24）,AccountMapper.xmlの<cache/>タグにより認証データがキャッシュされる。クラスタ構成への移行時に分散キャッシュ対応が必要か確認,技術検証
+MavenリポジトリURLハードコードの変更要否（ネットワーク制限環境への移行時）,12-impact-matrix.csv:Mavenリポジトリ行（needs_confirm=yes） / 10-platform.csv:maven-wrapper.properties行,移行先環境がネットワーク制限環境の場合MVNW_REPOURLと.mvn/wrapper/maven-wrapper.propertiesのdistributionUrlを社内ミラーに変更が必要,運用
+バッチ処理の有無と要件（spring-batch-infrastructure依存の必要性）,12-impact-matrix.csv:バッチ処理行（needs_confirm=yes） / 00-asset-check.csv:batch-shell行,spring-batch-infrastructure 5.2.6が依存に含まれているが業務バッチ実装クラスが未発見。バッチ機能の有無と範囲が不明,顧客
+業務設計書（ER図・画面設計書・業務フロー図）の入手と精度向上,12-impact-matrix.csv:業務設計書行（needs_confirm=yes） / 00-asset-check.csv:document行,業務設計書が未発見のため移行方針判断の根拠がコード読解のみ。設計書が存在する場合は入手して分析精度を向上させる必要がある,顧客
+CIシークレット（SONAR_TOKEN/CI_DEPLOY_USERNAME等）の移行先環境での再設定,10-platform.csv:sonar.yaml/sonatype.yaml/site.yaml行,GitHub Actions Secrets経由で設定されている認証情報が環境移行時に引き継ぎが必要,運用
+本番環境のネットワーク制限有無（Mavenリポジトリアクセス可否）,10-platform.csv:mvnw行（MVNW_REPOURL needs_confirm=yes）,ネットワーク制限環境ではMVNW_REPOURLを社内リポジトリに変更が必要。本番デプロイ環境の制約確認が必要,運用
+Windows環境でのIBM Liberty EE8動作不可の詳細理由,10-platform.csv:support.yaml行（needs_confirm=yes）,GitHub Actions CI設定でWindows上のLiberty EE8が除外されているが技術的理由が未確認,技術検証
+HSQLDBのデフォルトエンコーディングと移行先DBのエンコーディング設定,09-db.csv:ORDERSTATUS行（encoding needs_confirm=yes）,<jdbc:embedded-database>でHSQLDBを起動。文字コードは明示指定なし。移行先DBでは文字コードの明示設定が必要,技術検証
+SQLファイルのエンコーディング（BOM有無・明示設定）,09-db.csv:encoding行（inferred needs_confirm=yes）,<jdbc:script>のデフォルトエンコーディングはUTF-8。SQLファイル自体のBOM有無・エンコーディングの明示確認を推奨,技術検証
+OrderMapper.insertOrderStatusのORDERID列のjdbcType=NUMERIC指定とテーブル定義（INT型）の整合性,09-db.csv:insertOrderStatus行（needs_confirm=yes）,INSERT INTO ORDERSTATUSで#{orderId,jdbcType=NUMERIC}を指定しているがテーブル定義はINT型。整合性確認推奨,技術検証
+Stripes 1.6.0のJakarta EE対応状況（spring-web 5.3.xとの互換性）,04-unresolved.csv:net.sourceforge.stripes行（needs_confirm=yes）（追加調査: 04-unresolved.csv由来）,Stripes 1.6.0はjavax名前空間前提。spring-web 5.3.x固定とあわせてjakarta移行時の互換性が追えない,技術検証
+OrderActionBeanのセッション属性キー（/actions/Account.actionと/actions/Cart.action）の実際の登録タイミング,04-unresolved.csv:OrderActionBean#newOrderForm行（needs_confirm=yes）（追加調査: 04-unresolved.csv由来）,StripesのSessionScopeがどのキーでBeanをセッションに格納するかがStripes実装依存で静的追跡不可。動作確認が必要,技術検証
+Order.initOrderメソッドにおけるCartItemからLineItemへの変換ロジックの詳細,04-unresolved.csv:Order#initOrder行（needs_confirm=yes）（追加調査: 04-unresolved.csv由来）,Order.java:335行のうちinitOrderメソッドの中身（CartからLineItemへのデータフロー依存）が未確認,技術検証
+beans.xml（CDI設定）のTomcat環境での動作（CDI有効化有無）,04-unresolved.csv:beans.xml行（needs_confirm=yes）（追加調査: 04-unresolved.csv由来）,CDI beans.xmlがresinプロファイルでは除外設定あり。Tomcat等でどのように処理されるか（無視/CDI有効化）がソースから判断不可,技術検証
